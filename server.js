@@ -8,6 +8,7 @@ const execFilePromise = promisify(execFile);
 const writeFilePromise = promisify(fs.writeFile);
 const readFilePromise = promisify(fs.readFile);
 const accessPromise = promisify(fs.access);
+const unlinkPromise = promisify(fs.unlink);
 
 const app = express();
 
@@ -53,7 +54,7 @@ app.post('/htmlToPdf', async (req, res) => {
 
   const updatedHtml = $.html();
   const inputPath = '/tmp/input.html';
-  const outputPath = '/tmp/output.pdf';
+  const outputPath = `/tmp/output_${Date.now()}_${Math.floor(Math.random() * 10000)}.pdf`;
   const wkhtmltopdfPath = '/usr/local/bin/wkhtmltopdf';
 
   try {
@@ -84,11 +85,19 @@ app.post('/htmlToPdf', async (req, res) => {
     const pdfBuffer = await readFilePromise(outputPath);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline; filename=output.pdf');
+    res.setHeader('Content-Disposition', `inline; filename=${outputPath.split('/').pop()}`);
     res.status(200).send(pdfBuffer);
   } catch (error) {
     console.error(error);
     res.status(500).send('Failed to generate PDF.');
+  } finally {
+    // Delete the file
+    try {
+      await unlinkPromise(outputPath);
+      console.log(`Successfully deleted file ${outputPath}`);
+    } catch (error) {
+      console.error(`Failed to delete file ${outputPath}:`, error);
+    }
   }
 });
 
