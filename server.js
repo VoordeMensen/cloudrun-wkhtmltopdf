@@ -53,7 +53,7 @@ app.post('/htmlToPdf', async (req, res) => {
   $('head').append(pageBreakStyle);
 
   const updatedHtml = $.html();
-  const inputPath = '/tmp/input.html';
+  const inputPath = `/tmp/input_${Date.now()}_${Math.floor(Math.random() * 10000)}.html`;
   const outputPath = `/tmp/output_${Date.now()}_${Math.floor(Math.random() * 10000)}.pdf`;
   const wkhtmltopdfPath = '/usr/local/bin/wkhtmltopdf';
 
@@ -98,6 +98,14 @@ app.post('/htmlToPdf', async (req, res) => {
     } catch (error) {
       console.error(`Failed to delete file ${outputPath}:`, error);
     }
+
+    try {
+      await unlinkPromise(inputPath);
+      console.log(`Successfully deleted file ${inputPath}`);
+    } catch (error) {
+      console.error(`Failed to delete file ${inputPath}:`, error);
+    }
+    
   }
 });
 
