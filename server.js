@@ -28,7 +28,8 @@ app.post('/htmlToPdf', async (req, res) => {
   // Replace custom <qrcode> element with the desired <img> element
   $('qrcode').each((_, el) => {
     const qrcode = $(el).attr('value');
-    const img = `<img width=150 src="https://tickets.voordemensen.nl/qr/${qrcode}">`;
+    // const img = `<img width=150 src="https://tickets.voordemensen.nl/qr/${qrcode}">`;
+    const img = `<img width=150 src="https://europe-west4-voordemensen-frontend.cloudfunctions.net/vdm-qr2/${qrcode}">`;
     $(el).replaceWith(img);
   });
 
